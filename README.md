@@ -31,43 +31,88 @@ This project implements a sophisticated multi-agent AI system for answering phys
 ### Core Deliverables ✅
 
 ```
-📁 Repository Structure
+📁 Repository Structure (FLEXIBLE - Choose your layout!)
+
+OPTION A: ORGANIZED (Recommended for GitHub)
 ├── 📂 src/                          # Source code (11 Python modules)
-│   ├── streamlit_app.py            # Main UI orchestrator
-│   ├── train_classifier_dnn.py     # DNN training (routing)
-│   ├── interactive_classifier_dnn.py # Question classification
-│   ├── complete_rag_lora_comparison.py # RAG + answer generation
-│   ├── textbook_kb_builder.py      # Knowledge base creation
-│   ├── numerical_solver.py         # GROQ API integration
-│   ├── feedback_writer.py          # User feedback collection
-│   ├── merge_feedback_dnn.py       # Auto-retraining system
-│   ├── train_lora_physics.py       # LoRA fine-tuning
-│   ├── load_physics_datasets.py    # Data loading (4 HuggingFace sources)
-│   └── config.py                   # Configuration constants
-│
-├── 📂 data/                         # Training & Classification Data
-│   ├── numerical_questions.csv     # 100 numerical Q&A pairs
-│   ├── conceptual_questions.csv    # 100 conceptual Q&A pairs
-│   └── real_physics_qa.csv         # 14,608 physics Q&A pairs (4 sources)
-│
-├── 📂 models/                       # Pre-trained Models
-│   └── 📂 lora_finetuned_physics/  # Pre-trained LoRA Adapter
-│       ├── adapter_config.json     # LoRA configuration
-│       ├── adapter_model.bin       # Trained LoRA weights
-│       └── README.md               # Model documentation
-│
-├── 📂 Knowledge_Base/              # Your Physics PDFs (user-provided)
-│   └── (Add your textbooks here)   # Will be vectorized on first run
-│
-├── 📄 requirements.txt             # Python dependencies
-├── 📄 README.md                    # This file
-├── 📄 AI_Agent_Architecture.pdf    # System design & flowcharts
-└── 📄 Data_Science_Report_LoRA.pdf # Fine-tuning results & metrics
+│   ├── streamlit_app.py
+│   ├── train_classifier_dnn.py
+│   ├── interactive_classifier_dnn.py
+│   ├── complete_rag_lora_comparison.py
+│   ├── textbook_kb_builder.py
+│   ├── numerical_solver.py
+│   ├── feedback_writer.py
+│   ├── merge_feedback_dnn.py
+│   ├── train_lora_physics.py
+│   ├── load_physics_datasets.py
+│   └── config.py
+├── 📂 data/
+│   ├── numerical_questions.csv
+│   ├── conceptual_questions.csv
+│   └── real_physics_qa.csv
+├── 📂 models/
+│   └── 📂 lora_finetuned_physics/
+├── 📂 Knowledge_Base/              # 👈 ADD YOUR PDF HERE!
+│   └── physics_textbook.pdf        # ← Download example book!
+├── requirements.txt
+└── README.md
+
+OPTION B: FLAT (Everything in same folder - Works TOO!)
+├── streamlit_app.py
+├── train_classifier_dnn.py
+├── interactive_classifier_dnn.py
+├── complete_rag_lora_comparison.py
+├── textbook_kb_builder.py
+├── numerical_solver.py
+├── feedback_writer.py
+├── merge_feedback_dnn.py
+├── train_lora_physics.py
+├── load_physics_datasets.py
+├── config.py
+├── numerical_questions.csv
+├── conceptual_questions.csv
+├── real_physics_qa.csv
+├── physics_textbook.pdf            # 👈 ADD PDF HERE!
+├── requirements.txt
+└── README.md
+
+Both work! The code is flexible about paths. Choose what you prefer!
 ```
 
 ---
 
 ## 🚀 Quick Start Guide
+
+### ⚠️ IMPORTANT: Add a Physics Textbook!
+
+Before running, you MUST add at least one physics PDF file:
+
+**Option 1: Use Sample Physics PDF (Recommended)**
+
+```bash
+# Download a free physics textbook
+# Examples:
+# - OpenStax Physics (free): https://openstax.org/books/physics
+# - MIT OpenCourseWare: https://ocw.mit.edu/courses/physics/
+# - ArXiv Physics: https://arxiv.org/list/physics/
+
+# Or use any physics textbook in PDF format
+
+# Then place it in Knowledge_Base/ folder:
+mkdir -p Knowledge_Base
+cp /path/to/physics_textbook.pdf Knowledge_Base/
+```
+
+**Option 2: Use Sample Content**
+
+```bash
+# Create a minimal test PDF with physics content
+# (Download from: https://openstax.org/books/physics)
+```
+
+**Why?** The RAG system grounds answers in your PDFs. Without PDFs, the system will work but give general answers instead of domain-specific ones.
+
+---
 
 ### Prerequisites
 
@@ -75,6 +120,7 @@ This project implements a sophisticated multi-agent AI system for answering phys
 - **GPU:** NVIDIA T4 or better (T4 used in development)
 - **CUDA:** 12.0+
 - **GROQ API Key:** Get free at [console.groq.com](https://console.groq.com)
+- **Physics PDF:** At least one PDF file (see above!)
 
 ### Installation
 
@@ -97,23 +143,28 @@ pip install -r requirements.txt
 # 4. Set up environment variables
 echo "GROQ_API_KEY=your_groq_api_key_here" > .env
 
-# 5. Create Knowledge Base directory and add your PDFs
+# 5. ⭐ CREATE KNOWLEDGE BASE WITH YOUR PDF
 mkdir -p Knowledge_Base
-# Add your physics textbooks/PDFs to Knowledge_Base/ folder
+# ← Copy your physics PDF here
+# Example: cp ~/Downloads/physics_textbook.pdf Knowledge_Base/
 
-# 6. Build vector database (one-time, ~30-60 seconds)
+# 6. Build vector database from your PDFs (30-60 seconds)
 python src/textbook_kb_builder.py
+# Output: Creates vector_db/ folder with embeddings
 
-# 7. Train DNN classifier on 200 Q&A pairs (one-time, ~45 seconds)
+# 7. Train DNN classifier on 200 Q&A pairs (45 seconds)
 python src/train_classifier_dnn.py
+# Output: Creates dnn_classifier.pth + vectorizer.pkl
 
 # 8. Launch Streamlit app
 streamlit run src/streamlit_app.py
+# Opens at http://localhost:8501
 ```
 
 **What happens automatically:**
 - ✅ LoRA adapter loads instantly (no training needed)
 - ✅ FLAN-T5-Base loads (first run only)
+- ✅ Your PDFs indexed in ChromaDB
 - ✅ System ready in ~2 minutes
 - ✅ Both vector_db and DNN ready for deployment
 
@@ -126,7 +177,7 @@ Train LoRA adapter yourself on 14,608 physics Q&A pairs:
 ```bash
 # 1-5. Same as Option 1 above
 
-# 6. Build vector database
+# 6. Build vector database from your PDFs
 python src/textbook_kb_builder.py
 
 # 7. Train DNN classifier (45 seconds)
@@ -145,6 +196,90 @@ streamlit run src/streamlit_app.py
 - ✅ Fine-tunes LoRA with rank 8, 0.36% trainable params
 - ✅ Achieves 75.6% loss reduction (0.3531 → 0.0863)
 - ✅ Saves new LoRA adapter to models/lora_finetuned_physics/
+
+---
+
+## 📚 Where to Get Physics PDFs
+
+### Free Options
+
+**1. OpenStax Physics** (Recommended - Free & Comprehensive)
+- Download: https://openstax.org/books/physics
+- Covers: Classical mechanics, waves, thermodynamics, optics, modern physics
+- License: Creative Commons (free to use)
+
+**2. MIT OpenCourseWare**
+- Materials: https://ocw.mit.edu/courses/physics/
+- Includes: Lecture notes, problem sets, solutions
+
+**3. ArXiv Physics Papers**
+- Download: https://arxiv.org/list/physics/recent
+- Filter by topic (mechanics, quantum, thermodynamics, etc.)
+
+**4. Project Gutenberg Physics**
+- Download: https://www.gutenberg.org/
+- Classic physics textbooks in public domain
+
+**5. Your Own Textbooks**
+- Use physical textbooks → Scan/convert to PDF
+- Use e-textbooks → Extract as PDF
+- Use online materials → Save as PDF
+
+### Why Your PDF Matters
+
+```
+WITHOUT PDF:
+Q: "What is momentum?"
+A: [Generic answer from general knowledge]
+
+WITH PDF (Your Physics Textbook):
+Q: "What is momentum?"
+A: [Grounded in YOUR textbook]
+   - Uses YOUR definitions
+   - Matches YOUR notation
+   - Follows YOUR course style
+   
+Result: Personalized to your specific physics course!
+```
+
+---
+
+## 🛠️ File Organization Options
+
+### Organized Structure (Recommended)
+
+```
+multimodal-ai-agent-pipeline/
+├── src/                    # All Python files
+├── data/                   # All CSV files
+├── models/                 # Pre-trained LoRA
+├── Knowledge_Base/         # Your PDFs ← PUT PDFS HERE
+├── requirements.txt
+└── README.md
+```
+
+**Advantages:**
+- Professional layout
+- Good for GitHub
+- Easy to scale
+
+### Flat Structure (Also Works)
+
+```
+multimodal-ai-agent-pipeline/
+├── *.py files
+├── *.csv files
+├── *.pdf files            # PDFs in same folder
+├── requirements.txt
+└── README.md
+```
+
+**Advantages:**
+- Simple for single-folder deployment
+- Good for quick testing
+- Works on Vercel/Heroku
+
+**The code works with BOTH!** Choose what you prefer.
 
 ---
 
@@ -170,21 +305,21 @@ streamlit run src/streamlit_app.py
 ## 🛠️ System Components
 
 ### 1. **Question Classifier (DNN)**
-- **File:** `src/train_classifier_dnn.py` + `src/interactive_classifier_dnn.py`
+- **Files:** `train_classifier_dnn.py` + `interactive_classifier_dnn.py`
 - **Data:** 100 numerical + 100 conceptual Q&A pairs
 - **Accuracy:** 96%
 - **Speed:** 87ms per question
 - **Purpose:** Route to specialized agents (Numerical vs Conceptual)
 
 ### 2. **Knowledge Base (ChromaDB + RAG)**
-- **File:** `src/textbook_kb_builder.py`
-- **Input:** Your PDFs in `Knowledge_Base/` folder
+- **File:** `textbook_kb_builder.py`
+- **Input:** Your PDFs in `Knowledge_Base/` folder ← **CRITICAL!**
 - **Process:** Chunks → Embeddings → Vector storage
 - **Speed:** 230ms retrieval
 - **Output:** Grounds answers in your domain knowledge
 
 ### 3. **Answer Generation (Dual Models)**
-- **Files:** `src/complete_rag_lora_comparison.py`
+- **File:** `complete_rag_lora_comparison.py`
 - **Models:**
   - Base: FLAN-T5-Base (frozen, general)
   - LoRA: FLAN-T5 + Physics Adapter (specialized)
@@ -192,13 +327,13 @@ streamlit run src/streamlit_app.py
 - **Output:** Compares both, shows improvement
 
 ### 4. **Numerical Solver (GROQ)**
-- **File:** `src/numerical_solver.py`
+- **File:** `numerical_solver.py`
 - **Model:** Llama-3.3-70B-versatile
 - **Speed:** 0.9s per calculation
 - **Purpose:** Step-by-step numerical solutions
 
 ### 5. **Continuous Learning**
-- **Files:** `src/feedback_writer.py` + `src/merge_feedback_dnn.py`
+- **Files:** `feedback_writer.py` + `merge_feedback_dnn.py`
 - **Process:** User corrections → CSV → Auto-retrain → Improved classifier
 - **Retraining:** 45 seconds per update
 - **Benefit:** System improves over time
@@ -241,12 +376,13 @@ streamlit run src/streamlit_app.py
 **Tab 1: Ask Questions**
 - Enter any physics question
 - System automatically classifies (numerical vs conceptual)
+- Uses YOUR PDF for grounding
 - Receives specialized answer
 - User can provide feedback
 
 **Tab 2: Upload & Train**
-- Add PDFs to Knowledge_Base/
-- Builds vector database
+- Add/update PDFs in Knowledge_Base/
+- Rebuilds vector database
 - Trains DNN classifier
 - Or retrain LoRA if needed
 
@@ -262,7 +398,7 @@ streamlit run src/streamlit_app.py
 ### Classification Training (200 Q&A)
 - **numerical_questions.csv:** 100 questions on calculations
 - **conceptual_questions.csv:** 100 questions on concepts
-- Used for: Training DNN router
+- **Used for:** Training DNN router
 
 ### LoRA Fine-tuning (14,608 Q&A)
 - **real_physics_qa.csv:** 14,608 physics Q&A pairs from:
@@ -270,18 +406,19 @@ streamlit run src/streamlit_app.py
   2. SciQ Dataset (3,000)
   3. AI2 Reasoning Challenge (2,000)
   4. MMLU Physics (500)
-- Used for: LoRA adapter training
+- **Used for:** LoRA adapter training
 
-### Your Domain Knowledge
-- **Knowledge_Base/ (user-provided):** Your physics textbooks
-- Processing: Auto-chunked and vectorized
-- Used for: RAG context grounding
+### Your Domain Knowledge ⭐ REQUIRED
+- **Knowledge_Base/ (you provide):** Your physics textbooks
+- **Processing:** Auto-chunked and vectorized
+- **Used for:** RAG context grounding
+- **Impact:** Makes answers specific to your physics course!
 
 ---
 
 ## 🔧 Configuration
 
-Edit `src/config.py` to customize:
+Edit `config.py` to customize:
 
 ```python
 # Vector Database
@@ -299,6 +436,9 @@ LEARNING_RATE = 0.001
 # LoRA Configuration
 LORA_RANK = 8
 LORA_ALPHA = 32
+
+# Knowledge Base Path
+KB_PATH = "./Knowledge_Base"  # Change if using different folder
 ```
 
 ---
@@ -340,14 +480,6 @@ HUGGINGFACE_TOKEN=hf_your_token_here
    - Efficiency comparison (6x speedup)
    - Reproducibility & environment details
 
-### Code Documentation
-
-Each Python file has:
-- Docstrings explaining functions
-- Type hints for clarity
-- Configuration variables at top
-- Error handling & logging
-
 ---
 
 ## 🧪 Testing
@@ -364,10 +496,10 @@ python src/interactive_classifier_dnn.py
 # ✅ Ready for inference
 ```
 
-### Full Test (With Training)
+### Full Test (With Your PDFs)
 
 ```bash
-# 1. Build KB (30-60s)
+# 1. Build KB from your PDFs (30-60s)
 python src/textbook_kb_builder.py
 
 # 2. Train DNN (45s)
@@ -377,7 +509,7 @@ python src/train_classifier_dnn.py
 streamlit run src/streamlit_app.py
 
 # 4. In browser:
-# - Ask "What is momentum?" (conceptual route)
+# - Ask "What is momentum?" (conceptual route - uses YOUR PDF)
 # - Ask "Calculate energy for 2kg at 5m/s" (numerical route)
 ```
 
@@ -386,7 +518,7 @@ streamlit run src/streamlit_app.py
 ## 🔄 Continuous Learning Workflow
 
 1. **User asks question**
-2. **System provides answer**
+2. **System provides answer** (grounded in your PDF)
 3. **User marks correct/wrong**
    - ✅ Correct → Logged, system confirms
    - ❌ Wrong → Logged, system records correction
@@ -417,6 +549,7 @@ docker run -p 8501:8501 -e GROQ_API_KEY=your_key physics-qa
 ### Option 3: Cloud (Vercel/Heroku)
 - Deploy Streamlit to Vercel
 - Set environment variables in platform
+- Upload your PDFs to Knowledge_Base/
 - LoRA pre-trained included → Fast cold starts
 
 ---
@@ -437,26 +570,7 @@ docker run -p 8501:8501 -e GROQ_API_KEY=your_key physics-qa
 
 ---
 
-## 📋 Requirements
-
-See `requirements.txt` for exact versions:
-
-```
-torch==2.0.1
-transformers==4.34.0
-peft==0.7.1
-chromadb>=0.3.21
-sentence-transformers>=2.2.2
-streamlit>=1.28.0
-groq>=0.4.1
-python-dotenv>=1.0.0
-pandas>=2.0.0
-scikit-learn>=1.3.0
-```
-
----
-
-## ✅ Checklist for Submission
+## ✅ Submission Checklist
 
 - ✅ Source code (11 Python modules)
 - ✅ Pre-trained LoRA adapter
@@ -465,6 +579,7 @@ scikit-learn>=1.3.0
 - ✅ Data Science report (metrics + analysis)
 - ✅ Environment setup (requirements.txt)
 - ✅ README with setup instructions
+- ✅ **Knowledge Base with sample PDFs** ← USER ADDS THIS
 - ✅ Continuous learning system
 - ✅ Multi-agent routing (DNN)
 - ✅ RAG grounding (ChromaDB)
@@ -508,8 +623,10 @@ If you use this system, please cite:
 - **HuggingFace:** For transformer models and datasets
 - **GROQ:** For fast inference API
 - **Google:** For FLAN-T5 pre-trained model
+- **OpenStax:** For free physics textbooks
 
 ---
 
 **Last Updated:** November 1, 2025  
-**Status:** ✅ Production Ready
+**Status:** ✅ Production Ready  
+**⭐ Don't forget to add your Physics PDF to Knowledge_Base/ folder!**
