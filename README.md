@@ -7,8 +7,8 @@
 ## 👤 Project Information
 
 **Developer:** Surya Kamesh Mantha  
-**University:** [Your University Name]  
-**Department:** [Your Department]  
+**University:** Indian Institute Of Technology, Roorkee  
+**Department:** Chemical Engineering  
 **Specialization:** Machine Learning / AI
 
 ---
