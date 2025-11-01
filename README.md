@@ -139,21 +139,68 @@ pip install -r requirements.txt
 # 4. Set up environment variables
 echo "GROQ_API_KEY=your_groq_api_key_here" > .env
 
-# 5. ⭐ ADD YOUR PHYSICS PDF TO Knowledge_Base/
-# Download from OpenStax/MIT/etc and place in Knowledge_Base/ folder
+# 5. Consolidate all files into root folder
+## Move Python scripts from src/ to root
+mv src/*.py .
+
+## Move CSV data files to root
+mv data/*.csv .
+
+## Move model files to root
+mv models/lora_finetuned_physics/* .
+
+## Remove empty folders
+rmdir src
+rmdir data
+rmdir models/lora_finetuned_physics
+rmdir models
+
+# 6. Update import paths in all Python files
+python << 'EOF'
+import os
+import re
+
+# Update all Python files in root
+for file in [f for f in os.listdir('.') if f.endswith('.py')]:
+    with open(file, 'r') as f:
+        content = f.read()
+    
+    # Remove src. prefix from imports
+    content = re.sub(r'from src\.', 'from ', content)
+    content = re.sub(r'import src\.', 'import ', content)
+    
+    with open(file, 'w') as f:
+        f.write(content)
+
+print('✅ Updated import paths in all Python files')
+EOF
+
+# 7. Update file paths in config.py
+# On Mac/Linux:
+sed -i '' 's|models/lora_finetuned_physics/||g' config.py
+sed -i '' 's|data/||g' config.py
+
+# On Windows (PowerShell):
+# (Get-Content config.py) -replace 'models/lora_finetuned_physics/', '' | Set-Content config.py
+# (Get-Content config.py) -replace 'data/', '' | Set-Content config.py
+
+# 8. Create Knowledge_Base folder for your PDFs
 mkdir -p Knowledge_Base
-# Copy your PDF: cp ~/Downloads/physics_textbook.pdf Knowledge_Base/
+# Download from OpenStax/MIT and copy here
 
-# 6. Build vector database from your PDFs (30-60 seconds)
-python src/textbook_kb_builder.py
-# Output: Creates vector_db/ folder with embeddings
+# 9. Test imports
+python -c "import streamlit_app, train_classifier_dnn, textbook_kb_builder; print('✅ All imports successful!')"
 
-# 7. Train DNN classifier on 200 Q&A pairs (45 seconds)
-python src/train_classifier_dnn.py
+# 10. Build vector database (30-60 seconds)
+python textbook_kb_builder.py
+# Output: Creates vector_db/ folder
+
+# 11. Train DNN classifier (45 seconds)
+python train_classifier_dnn.py
 # Output: Creates dnn_classifier.pth + vectorizer.pkl
 
-# 8. Launch Streamlit app
-streamlit run src/streamlit_app.py
+# 12. Launch Streamlit app
+streamlit run streamlit_app.py
 # Opens at http://localhost:8501
 ```
 
