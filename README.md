@@ -58,10 +58,8 @@ multimodal-ai-agent-pipeline/
 ├── 📂 Knowledge_Base/                       # Your Physics PDFs (user-provided)
 │   └── physics_textbook.pdf                # ← ADD YOUR PHYSICS TEXTBOOK HERE
 │
-├── 📂 results/                              # Interaction Logs & Results
-│   ├── comparison_2025-11-01T02-02-34.json # Example: Model comparison logs
-│   ├── interaction_history.json            # Chat history with AI agent
-│   └── prompts_used.json                   # System prompts and user queries
+├── 📂 results/                              # Model Comparison Results
+│   └── comparison_*.json                   # Model performance logs
 │
 ├── 📄 Physics_QA_AI_Architecture.pdf        # System architecture document
 ├── 📄 Data_Science_Report_LoRA.pdf          # Fine-tuning analysis & results
@@ -325,63 +323,23 @@ streamlit run streamlit_app.py
 
 ---
 
-## 📊 Interaction Logs & Results
+## 📊 Model Comparison Results
 
-All system interactions are logged in the `results/` folder in JSON format:
-
-### Results Folder Structure
+All model comparison outputs are saved in the `results/` folder as JSON files:
 
 ```
 results/
-├── comparison_2025-11-01T02-02-34.json      # Model comparison output
-│   └── Contains:
-│       • Question & DNN classification
-│       • Base model response + quality score
-│       • LoRA model response + quality score
-│       • User selection (which model they chose)
-│       • Context retrieved from PDFs
-│       • Timestamps
-│
-├── interaction_history.json                 # Complete chat logs
-│   └── Contains:
-│       • All questions asked
-│       • Classification decisions
-│       • Generated responses
-│       • User feedback
-│
-└── prompts_used.json                        # System prompts
-    └── Contains:
-        • RAG retrieval prompts
-        • Generation prompts
-        • Comparison metrics calculations
+└── comparison_2025-11-01T02-02-34.json     # Model performance metrics
 ```
 
-### Example Interaction Log
-
-```json
-{
-  "timestamp": "2025-11-01T02:02:34.125537",
-  "question": "Explain momentum",
-  "dnn_classification": {
-    "numerical_score": 0.01,
-    "conceptual_score": 99.99,
-    "predicted_label": "conceptual",
-    "confidence": 99.99
-  },
-  "comparison": {
-    "type": "conceptual",
-    "base_response": "Momentum is a measure of the velocity...",
-    "base_quality": 75.0,
-    "lora_response": "Momentum is a measure of the velocity of an object...",
-    "lora_quality": 80.0,
-    "success": true
-  },
-  "user_selection": {
-    "selected_model": "Base",
-    "timestamp_selected": "2025-11-01T02:02:34.125541"
-  }
-}
-```
+**Each comparison includes:**
+- Question asked by user
+- DNN classification result
+- Base model response + quality score
+- LoRA model response + quality score
+- User selection (which model they preferred)
+- Context retrieved from PDFs
+- Performance metrics
 
 ---
 
@@ -543,8 +501,8 @@ streamlit run src/streamlit_app.py
 1. **User asks question**
 2. **System provides answer** (grounded in your PDF via RAG)
 3. **User marks correct/wrong**
-   - ✅ Correct → Logged in results/, system confirms
-   - ❌ Wrong → Logged in results/, system records for correction
+   - ✅ Correct → Logged, system confirms
+   - ❌ Wrong → Logged, system records for correction
 4. **Auto-trigger retraining**
    - Reads feedback.csv
    - Moves Q to correct category
@@ -576,9 +534,9 @@ streamlit run src/streamlit_app.py
 - ✅ Source code (11 Python modules in `src/`)
 - ✅ Pre-trained LoRA adapter in `models/`
 - ✅ Training data (200 + 14,608 Q&A pairs in `data/`)
-- ✅ AI Architecture document with flowcharts
-- ✅ Data Science report with metrics & analysis
-- ✅ Interaction logs in `results/` folder (JSON format)
+- ✅ AI Architecture document (flowcharts + design)
+- ✅ Data Science report (metrics + analysis)
+- ✅ Model comparison results in `results/` folder
 - ✅ Environment setup (requirements.txt)
 - ✅ README with setup instructions
 - ✅ **Knowledge Base folder ready for your PDFs** ← USER ADDS PDF
