@@ -421,22 +421,6 @@ docker run -p 8501:8501 -e GROQ_API_KEY=your_key physics-qa
 
 ---
 
-## 📞 Contact & Support
-
-**Developer:** Surya Kamesh Mantha
-
-**Email Addresses to Notify:**
-- yasuhironose@imbesideyou.world
-- sanskarnanegaonkar@imbesideyou.world
-- mamindla@imbesideyou.world
-- Animeshmishra@imbesideyou.world
-
-**Include in Email:**
-- Subject: "Physics Q&A AI Agent Repository Submission"
-- Body: Repository URL + Brief project description
-
----
-
 ## 📚 Technology Stack
 
 | Component | Technology | Version |
@@ -523,7 +507,6 @@ If you use this system, please cite:
 
 - **HuggingFace:** For transformer models and datasets
 - **GROQ:** For fast inference API
-- **Perplexity AI:** For AI agent development tools
 - **Google:** For FLAN-T5 pre-trained model
 
 ---
