@@ -58,10 +58,16 @@ multimodal-ai-agent-pipeline/
 ├── 📂 Knowledge_Base/                       # Your Physics PDFs (user-provided)
 │   └── physics_textbook.pdf                # ← ADD YOUR PHYSICS TEXTBOOK HERE
 │
+├── 📂 results/                              # Interaction Logs & Results
+│   ├── comparison_2025-11-01T02-02-34.json # Example: Model comparison logs
+│   ├── interaction_history.json            # Chat history with AI agent
+│   └── prompts_used.json                   # System prompts and user queries
+│
+├── 📄 Physics_QA_AI_Architecture.pdf        # System architecture document
+├── 📄 Data_Science_Report_LoRA.pdf          # Fine-tuning analysis & results
 ├── 📄 requirements.txt                      # Python dependencies
 ├── 📄 README.md                             # This file
-├── 📄 AI_Agent_Architecture.pdf             # System design & flowcharts
-└── 📄 Data_Science_Report_LoRA.pdf          # Fine-tuning results & metrics
+└── 📄 .env                                  # API keys (create this file)
 ```
 
 ---
@@ -91,15 +97,15 @@ A: [Answer using YOUR textbook definitions and notation]
 ### Where to Get Free Physics PDFs
 
 1. **OpenStax Physics** (Recommended - Free & Comprehensive)
-   - https://openstax.org/books/physics
+   - [https://openstax.org/books/physics](https://openstax.org/books/physics)
    - Covers: mechanics, waves, thermodynamics, optics, modern physics
 
 2. **MIT OpenCourseWare**
-   - https://ocw.mit.edu/courses/physics/
+   - [https://ocw.mit.edu/courses/physics/](https://ocw.mit.edu/courses/physics/)
    - Lecture notes, problem sets, solutions
 
 3. **ArXiv Physics Papers**
-   - https://arxiv.org/list/physics/
+   - [https://arxiv.org/list/physics/](https://arxiv.org/list/physics/)
    - Filter by topic (mechanics, quantum, thermodynamics)
 
 4. **Your Own Textbooks**
@@ -147,12 +153,12 @@ mv src/*.py .
 mv data/*.csv .
 
 ## Move model files to root
-mv models/lora_finetuned_physics/* .
+mv models/* .
 
-## Remove empty folders
+rm src/*
 rmdir src
+rm data/*
 rmdir data
-rmdir models/lora_finetuned_physics
 rmdir models
 
 # 6. Update import paths in all Python files
@@ -175,31 +181,20 @@ for file in [f for f in os.listdir('.') if f.endswith('.py')]:
 print('✅ Updated import paths in all Python files')
 EOF
 
-# 7. Update file paths in config.py
-# On Mac/Linux:
-sed -i '' 's|models/lora_finetuned_physics/||g' config.py
-sed -i '' 's|data/||g' config.py
-
-# On Windows (PowerShell):
-# (Get-Content config.py) -replace 'models/lora_finetuned_physics/', '' | Set-Content config.py
-# (Get-Content config.py) -replace 'data/', '' | Set-Content config.py
-
-# 8. Create Knowledge_Base folder for your PDFs
+# 7. Create Knowledge_Base folder for your PDFs
 mkdir -p Knowledge_Base
+# Add your pdf here => don't forget to add here!
 # Download from OpenStax/MIT and copy here
 
-# 9. Test imports
-python -c "import streamlit_app, train_classifier_dnn, textbook_kb_builder; print('✅ All imports successful!')"
-
-# 10. Build vector database (30-60 seconds)
-python textbook_kb_builder.py
+# 8. Build vector database (30-60 seconds)
+python textbook_kb_builder.py --pdf Knowledge_Base/physics.pdf
 # Output: Creates vector_db/ folder
 
-# 11. Train DNN classifier (45 seconds)
+# 9. Train DNN classifier (45 seconds)
 python train_classifier_dnn.py
 # Output: Creates dnn_classifier.pth + vectorizer.pkl
 
-# 12. Launch Streamlit app
+# 10. Launch Streamlit app
 streamlit run streamlit_app.py
 # Opens at http://localhost:8501
 ```
@@ -219,31 +214,33 @@ streamlit run streamlit_app.py
 Train LoRA adapter yourself on 14,608 physics Q&A pairs:
 
 ```bash
-# 1-4. Same as Option 1
+# 1-6. Same as Option 1
 
-# 5. ⭐ ADD YOUR PHYSICS PDF TO Knowledge_Base/
+# 7. Create Knowledge_Base folder for your PDFs
 mkdir -p Knowledge_Base
-# Copy your PDF: cp ~/Downloads/physics_textbook.pdf Knowledge_Base/
 
-# 6. Build vector database from your PDFs
-python src/textbook_kb_builder.py
+# 8. ⭐ ADD YOUR PHYSICS PDF TO Knowledge_Base/
+# Download from OpenStax/MIT and copy here
 
-# 7. Train DNN classifier (45 seconds)
-python src/train_classifier_dnn.py
+# 9. Build vector database from your PDFs
+python textbook_kb_builder.py --pdf Knowledge_Base/physics.pdf
 
-# 8. Train LoRA adapter on physics dataset (2 hours)
-python src/train_lora_physics.py
-# Output: models/lora_finetuned_physics/adapter_model.bin
+# 10. Train DNN classifier (45 seconds)
+python train_classifier_dnn.py
 
-# 9. Launch Streamlit app
-streamlit run src/streamlit_app.py
+# 11. Train LoRA adapter on physics dataset (2 hours)
+python train_lora_physics.py
+# Output: lora_finetuned_physics/adapter_model.bin
+
+# 12. Launch Streamlit app
+streamlit run streamlit_app.py
 ```
 
 **What happens:**
 - ✅ Loads 14,608 Q&A pairs from 4 HuggingFace sources
 - ✅ Fine-tunes LoRA with rank 8, 0.36% trainable params
 - ✅ Achieves 75.6% loss reduction (0.3531 → 0.0863)
-- ✅ Saves new LoRA adapter to models/lora_finetuned_physics/
+- ✅ Saves new LoRA adapter to lora_finetuned_physics/
 - ✅ Your PDFs indexed in ChromaDB for RAG
 
 ---
@@ -325,6 +322,66 @@ streamlit run src/streamlit_app.py
 | **Conceptual Question** | 2.88s | ✅ Acceptable |
 | **Numerical Question** | 1.8s | ✅ Responsive |
 | **Setup** | ~2 minutes | ✅ Quick |
+
+---
+
+## 📊 Interaction Logs & Results
+
+All system interactions are logged in the `results/` folder in JSON format:
+
+### Results Folder Structure
+
+```
+results/
+├── comparison_2025-11-01T02-02-34.json      # Model comparison output
+│   └── Contains:
+│       • Question & DNN classification
+│       • Base model response + quality score
+│       • LoRA model response + quality score
+│       • User selection (which model they chose)
+│       • Context retrieved from PDFs
+│       • Timestamps
+│
+├── interaction_history.json                 # Complete chat logs
+│   └── Contains:
+│       • All questions asked
+│       • Classification decisions
+│       • Generated responses
+│       • User feedback
+│
+└── prompts_used.json                        # System prompts
+    └── Contains:
+        • RAG retrieval prompts
+        • Generation prompts
+        • Comparison metrics calculations
+```
+
+### Example Interaction Log
+
+```json
+{
+  "timestamp": "2025-11-01T02:02:34.125537",
+  "question": "Explain momentum",
+  "dnn_classification": {
+    "numerical_score": 0.01,
+    "conceptual_score": 99.99,
+    "predicted_label": "conceptual",
+    "confidence": 99.99
+  },
+  "comparison": {
+    "type": "conceptual",
+    "base_response": "Momentum is a measure of the velocity...",
+    "base_quality": 75.0,
+    "lora_response": "Momentum is a measure of the velocity of an object...",
+    "lora_quality": 80.0,
+    "success": true
+  },
+  "user_selection": {
+    "selected_model": "Base",
+    "timestamp_selected": "2025-11-01T02:02:34.125541"
+  }
+}
+```
 
 ---
 
@@ -430,11 +487,13 @@ HUGGINGFACE_TOKEN=hf_your_token_here
 
 ### Included Reports
 
-1. **AI_Agent_Architecture.pdf** (13 pages)
-   - Complete system design with 11 components
-   - 4 detailed flowcharts with ASCII boxes
+1. **Physics_QA_AI_Architecture.pdf** (14 pages)
+   - Complete system design with 8 components
+   - 4 detailed flowcharts with properly aligned ASCII diagrams
+   - User feedback flow immediately after DNN classification
    - Model rationale & design choices
-   - Complete pipeline examples (conceptual, numerical, correction)
+   - Complete pipeline examples (numerical, conceptual, correction scenarios)
+   - Why LoRA vs other fine-tuning methods (complete comparison)
 
 2. **Data_Science_Report_LoRA.pdf** (12 pages)
    - LoRA fine-tuning setup & methodology
@@ -484,8 +543,8 @@ streamlit run src/streamlit_app.py
 1. **User asks question**
 2. **System provides answer** (grounded in your PDF via RAG)
 3. **User marks correct/wrong**
-   - ✅ Correct → Logged, system confirms
-   - ❌ Wrong → Logged, system records for correction
+   - ✅ Correct → Logged in results/, system confirms
+   - ❌ Wrong → Logged in results/, system records for correction
 4. **Auto-trigger retraining**
    - Reads feedback.csv
    - Moves Q to correct category
@@ -517,8 +576,9 @@ streamlit run src/streamlit_app.py
 - ✅ Source code (11 Python modules in `src/`)
 - ✅ Pre-trained LoRA adapter in `models/`
 - ✅ Training data (200 + 14,608 Q&A pairs in `data/`)
-- ✅ AI Architecture document (flowcharts + design)
-- ✅ Data Science report (metrics + analysis)
+- ✅ AI Architecture document with flowcharts
+- ✅ Data Science report with metrics & analysis
+- ✅ Interaction logs in `results/` folder (JSON format)
 - ✅ Environment setup (requirements.txt)
 - ✅ README with setup instructions
 - ✅ **Knowledge Base folder ready for your PDFs** ← USER ADDS PDF
@@ -553,6 +613,8 @@ If you use this system, please cite:
 @project{physics_qa_agent,
   title={Physics Q&A AI Agent: Multi-Agent System with Continuous Learning},
   author={Surya Kamesh Mantha},
+  university={Indian Institute Of Technology, Roorkee},
+  department={Chemical Engineering},
   year={2025},
   url={https://github.com/SuryaKameshMantha/multimodal-ai-agent-pipeline}
 }
@@ -566,6 +628,7 @@ If you use this system, please cite:
 - **GROQ:** For fast inference API
 - **Google:** For FLAN-T5 pre-trained model
 - **OpenStax:** For free physics textbooks
+- **Mentors:** For guidance and feedback
 
 ---
 
