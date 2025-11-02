@@ -1,0 +1,69 @@
+{
+  "timestamp": "2025-11-02T06:54:11.855554",
+  "question": "Describe how electromagnetic induction works",
+  "dnn_classification": {
+    "numerical_score": 14.66,
+    "conceptual_score": 85.34,
+    "predicted_label": "conceptual",
+    "confidence": 85.34
+  },
+  "comparison": {
+    "type": "conceptual",
+    "is_comparison": true,
+    "base_response": "1. Electromagnetic induction is the process of converting electrical energy into magnetic energy. 2. The law of induction states that an emf and a current can be induced by changing the amount of magnetic field passing through the loop. 3. Clear reasoning 4. Practical implications, if applicable.",
+    "lora_response": "Induction is the process of converting magnetic field energy into electrical energy. It is a process in which the magnetic field is converted into electric field energy. If a current iis estab-lished, there is no current in the circuit. However, if a conducting loop is replaced by a closely packed coil of N turns, the inducedemf is(Faraday\u2019s law). 3. Clear reasoning 4. Practical implications.",
+    "best_response": "1. Electromagnetic induction is the process of converting electrical energy into magnetic energy. 2. The law of induction states that an emf and a current can be induced by changing the amount of magnetic field passing through the loop. 3. Clear reasoning 4. Practical implications, if applicable.",
+    "selected_model": "Tie",
+    "comparison_metrics": {
+      "timestamp": "2025-11-02T06:54:01.069534",
+      "question": "Describe how electromagnetic induction works",
+      "context_length": 3057,
+      "base_model": {
+        "response": "1. Electromagnetic induction is the process of converting electrical energy into magnetic energy. 2. The law of induction states that an emf and a current can be induced by changing the amount of magnetic field passing through the loop. 3. Clear reasoning 4. Practical implications, if applicable.",
+        "metrics": {
+          "response_length": 297,
+          "word_count": 47,
+          "sentence_count": 7,
+          "question_relevance": 0.719775915145874,
+          "context_alignment": 0.578729510307312,
+          "overall_quality": 0.6555292191505432
+        }
+      },
+      "lora_model": {
+        "response": "Induction is the process of converting magnetic field energy into electrical energy. It is a process in which the magnetic field is converted into electric field energy. If a current iis estab-lished, there is no current in the circuit. However, if a conducting loop is replaced by a closely packed coil of N turns, the inducedemf is(Faraday\u2019s law). 3. Clear reasoning 4. Practical implications.",
+        "metrics": {
+          "response_length": 395,
+          "word_count": 64,
+          "sentence_count": 7,
+          "question_relevance": 0.5975974798202515,
+          "context_alignment": 0.5876063108444214,
+          "overall_quality": 0.643320885181427
+        }
+      },
+      "winner": "Tie",
+      "decision_reason": "Models perform similarly (within 5% difference)"
+    },
+    "base_metrics": {
+      "response_length": 297,
+      "word_count": 47,
+      "sentence_count": 7,
+      "question_relevance": 0.719775915145874,
+      "context_alignment": 0.578729510307312,
+      "overall_quality": 0.6555292191505432
+    },
+    "lora_metrics": {
+      "response_length": 395,
+      "word_count": 64,
+      "sentence_count": 7,
+      "question_relevance": 0.5975974798202515,
+      "context_alignment": 0.5876063108444214,
+      "overall_quality": 0.643320885181427
+    },
+    "lora_available": true,
+    "success": true
+  },
+  "user_selection": {
+    "selected_model": "Tie",
+    "timestamp_selected": "2025-11-02T06:54:11.855556"
+  }
+}
