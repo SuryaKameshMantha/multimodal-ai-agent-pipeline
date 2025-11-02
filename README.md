@@ -348,7 +348,7 @@ results/
 ### Start the Web UI
 
 ```bash
-streamlit run src/streamlit_app.py
+streamlit run streamlit_app.py
 # Opens at http://localhost:8501
 ```
 
@@ -468,7 +468,7 @@ HUGGINGFACE_TOKEN=hf_your_token_here
 
 ```bash
 # Verify installation works
-python src/interactive_classifier_dnn.py
+python interactive_classifier_dnn.py
 
 # Output should show:
 # ✅ Model loaded
@@ -480,13 +480,13 @@ python src/interactive_classifier_dnn.py
 
 ```bash
 # 1. Build KB from your PDFs (30-60s)
-python src/textbook_kb_builder.py
+python textbook_kb_builder.py
 
 # 2. Train DNN classifier (45s)
-python src/train_classifier_dnn.py
+python train_classifier_dnn.py
 
 # 3. Launch Streamlit app
-streamlit run src/streamlit_app.py
+streamlit run streamlit_app.py
 
 # 4. In browser, test:
 # - Ask "What is momentum?" (conceptual route - uses YOUR PDF)
